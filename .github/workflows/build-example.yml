@@ -1,0 +1,74 @@
+name: Build Example
+
+# Builds the example app for both platforms to verify the plugin itself
+# actually compiles and links correctly — this is a build-time check
+# (catches things like plugin registration or native build wiring breaking),
+# distinct from the Code Quality workflow's static analysis / lint checks.
+#
+# The actual plugin package lives in ./strivacity_pushnotification (see
+# ../README.md for why) — both jobs build strivacity_pushnotification/example.
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  build-example-android:
+    name: Build example (Android, debug)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: liberica
+          java-version: "21"
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+
+      - name: Install dependencies
+        working-directory: strivacity_pushnotification/example
+        run: flutter pub get
+
+      # Debug build, unsigned — this is a build check, not a release artifact.
+      - name: Build
+        working-directory: strivacity_pushnotification/example
+        run: flutter build apk --debug
+
+  build-example-ios:
+    name: Build example (iOS, debug, simulator)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+
+      - name: Install dependencies
+        working-directory: strivacity_pushnotification/example
+        run: flutter pub get
+
+      # Simulator build, no code signing — this is a build check (also
+      # exercises the plugin's Swift Package Manager wiring), not a release
+      # artifact.
+      - name: Build
+        working-directory: strivacity_pushnotification/example
+        run: flutter build ios --debug --simulator

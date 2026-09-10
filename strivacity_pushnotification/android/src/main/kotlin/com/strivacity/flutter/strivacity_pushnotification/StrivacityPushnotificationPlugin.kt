@@ -23,7 +23,7 @@ class StrivacityPushnotificationPlugin :
 
     override fun onMethodCall(
         call: MethodCall,
-        result: Result
+        result: Result,
     ) {
         if (call.method == "getPlatformVersion") {
             result.success("Android ${android.os.Build.VERSION.RELEASE}")

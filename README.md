@@ -2,6 +2,13 @@
 
 ## Developer notes
 
+### Requirements
+
+Building the plugin's Android module — including running Gradle directly in
+`strivacity_pushnotification/example/android` (`./gradlew assembleDebug`,
+or the `spotlessCheck`/`detekt`/`lint` tasks), rather than via `flutter
+build`/`flutter run` — requires **JDK 17 or 21** as `JAVA_HOME`.
+
 **Open [`strivacity_pushnotification/`](strivacity_pushnotification) as the
 project root** — not this repository's root. That subdirectory is the actual
 Flutter plugin (`pubspec.yaml`, `lib/`, `ios/`, `android/`, `example/`,
@@ -11,6 +18,43 @@ CLI commands (`cd strivacity_pushnotification` first) and to VS Code.
 
 See [`strivacity_pushnotification/README.md`](strivacity_pushnotification/README.md)
 for the plugin's actual documentation and getting-started instructions.
+
+### Activate the git hooks
+
+This repo's checks (`flutter analyze`, SwiftFormat/SwiftLint, and
+Spotless/Detekt/Android Lint) run locally via
+[lefthook](https://github.com/evilmartians/lefthook), declared in
+[`.lefthook.yml`](.lefthook.yml) — the same tool `repos/ios` uses. Install
+the toolchain, then activate the hook once per clone, both from **this
+repo's root** (not `strivacity_pushnotification/`, since that's where `.git`
+and `.lefthook.yml` live):
+
+```bash
+brew install lefthook swiftformat swiftlint
+lefthook install
+```
+
+That installs a `pre-commit` hook running, in parallel: `flutter analyze` on
+the plugin, SwiftFormat + SwiftLint on the plugin's iOS Swift code, and
+Spotless + Detekt + Android Lint on the plugin's Android Kotlin code (via
+`strivacity_pushnotification/example/android`'s Gradle build) — the same
+checks the [Code Quality](.github/workflows/code-quality.yml) workflow runs
+on pull requests. The Android job requires JDK 17 or 21 as `JAVA_HOME` (see
+Requirements above) and expects `strivacity_pushnotification/example` to
+already have its dependencies fetched at least once (`flutter pub get`).
+
+Verify it's wired up with:
+
+```bash
+lefthook run pre-commit --force
+```
+
+(`--force` runs the hook even with nothing staged — useful for a first
+check.) To remove the hooks again, run `lefthook uninstall`.
+
+Note that lefthook lints the **staged** content, not your working tree — it
+stashes unstaged changes first. After fixing a violation, `git add` the file
+before retrying the commit, or the hook will keep reporting the old version.
 
 ### Why the plugin isn't at this repo's root
 

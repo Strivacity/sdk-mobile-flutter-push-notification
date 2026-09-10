@@ -1,0 +1,24 @@
+pre-commit:
+  parallel: false
+  files: git ls-files # run on all git-tracked files
+  jobs:
+    - name: Linting
+      group:
+        parallel: true
+        piped: false
+        jobs:
+          - name: iOS (SwiftFormat + SwiftLint)
+            group:
+              parallel: true
+              piped: false
+              jobs:
+                - run: cd strivacity_pushnotification/ios/strivacity_pushnotification && swiftformat --lint .
+                - run: cd strivacity_pushnotification/ios/strivacity_pushnotification && swiftlint .
+
+          - name: Android (Spotless + Detekt + Lint)
+            run: >-
+              cd strivacity_pushnotification/example/android &&
+              ./gradlew :strivacity_pushnotification:spotlessCheck
+              :strivacity_pushnotification:detekt
+              :strivacity_pushnotification:lint
+              --no-daemon
