@@ -1,0 +1,8 @@
+# The actual plugin package lives in ./strivacity_pushnotification and has its
+# own .gitignore for build outputs. This root only needs IDE/OS cruft ignored.
+
+.idea/
+*.iml
+.vscode/
+
+.DS_Store

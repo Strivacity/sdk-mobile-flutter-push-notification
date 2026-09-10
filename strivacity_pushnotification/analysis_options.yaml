@@ -1,0 +1,147 @@
+# Static analysis configuration for the strivacity_pushnotification plugin.
+#
+# Built on top of `package:flutter_lints`, with stricter type-checking and an
+# extended lint set. This package is a published SDK, so the rules here lean
+# towards catching bugs early and keeping the public API documented and stable.
+#
+# See https://dart.dev/tools/analysis for the full list of options.
+
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    # Reject implicit `dynamic` -> typed downcasts, un-inferrable type
+    # arguments, and raw (unparameterised) generic types.
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.mocks.dart"
+
+  errors:
+    # Anything that is almost certainly a bug fails the build.
+    argument_type_not_assignable: error
+    body_might_complete_normally_nullable: error
+    invalid_use_of_visible_for_testing_member: error
+    missing_required_param: error
+    missing_return: error
+    return_of_invalid_type: error
+    unchecked_use_of_nullable_value: error
+
+    # Dead or unused code should not survive review.
+    dead_code: warning
+    unused_element: warning
+    unused_field: warning
+    unused_import: warning
+    unused_local_variable: warning
+
+    # Deprecations inside our own package are a migration signal, not noise.
+    deprecated_member_use_from_same_package: warning
+
+    # TODOs are informational so they do not fail CI.
+    todo: info
+
+linter:
+  rules:
+    # --- Correctness -------------------------------------------------------
+    always_declare_return_types: true
+    avoid_dynamic_calls: true
+    avoid_empty_else: true
+    avoid_slow_async_io: true
+    avoid_type_to_string: true
+    avoid_types_as_parameter_names: true
+    cancel_subscriptions: true
+    close_sinks: true
+    collection_methods_unrelated_type: true
+    comment_references: true
+    control_flow_in_finally: true
+    discarded_futures: true
+    empty_statements: true
+    hash_and_equals: true
+    implicit_reopen: true
+    invalid_case_patterns: true
+    literal_only_boolean_expressions: true
+    no_adjacent_strings_in_list: true
+    no_self_assignments: true
+    no_wildcard_variable_uses: true
+    prefer_void_to_null: true
+    test_types_in_equals: true
+    throw_in_finally: true
+    unawaited_futures: true
+    unnecessary_statements: true
+    use_build_context_synchronously: true
+    valid_regexps: true
+
+    # --- API design & public surface --------------------------------------
+    avoid_equals_and_hash_code_on_mutable_classes: true
+    avoid_field_initializers_in_const_classes: true
+    avoid_positional_boolean_parameters: true
+    avoid_setters_without_getters: true
+    avoid_void_async: true
+    public_member_api_docs: true
+    use_setters_to_change_properties: true
+    use_to_and_as_if_applicable: true
+
+    # --- Null safety & immutability ---------------------------------------
+    avoid_returning_null_for_void: true
+    null_check_on_nullable_type_parameter: true
+    prefer_final_fields: true
+    prefer_final_in_for_each: true
+    prefer_final_locals: true
+    prefer_const_constructors: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+    use_late_for_private_fields_and_variables: true
+
+    # --- Style & consistency ----------------------------------------------
+    always_put_required_named_parameters_first: true
+    avoid_bool_literals_in_conditional_expressions: true
+    avoid_catches_without_on_clauses: true
+    avoid_catching_errors: true
+    avoid_escaping_inner_quotes: true
+    avoid_multiple_declarations_per_line: true
+    avoid_redundant_argument_values: true
+    avoid_unused_constructor_parameters: true
+    cascade_invocations: true
+    directives_ordering: true
+    join_return_with_assignment: true
+    leading_newlines_in_multiline_strings: true
+    matching_super_parameters: true
+    missing_code_block_language_in_doc_comment: true
+    omit_local_variable_types: true
+    only_throw_errors: true
+    parameter_assignments: true
+    prefer_asserts_with_message: true
+    prefer_expression_function_bodies: true
+    prefer_if_elements_to_conditional_expressions: true
+    prefer_null_aware_method_calls: true
+    prefer_relative_imports: true
+    prefer_single_quotes: true
+    require_trailing_commas: true
+    sort_constructors_first: true
+    sort_unnamed_constructors_first: true
+    tighten_type_of_initializing_formals: true
+    type_annotate_public_apis: true
+    unnecessary_breaks: true
+    unnecessary_lambdas: true
+    unnecessary_library_directive: true
+    unnecessary_null_aware_operator_on_extension_on_nullable: true
+    unnecessary_null_checks: true
+    unnecessary_parenthesis: true
+    unnecessary_raw_strings: true
+    unnecessary_to_list_in_spreads: true
+    use_enums: true
+    use_named_constants: true
+    use_raw_strings: true
+    use_string_buffers: true
