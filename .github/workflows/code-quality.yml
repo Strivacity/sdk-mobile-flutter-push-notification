@@ -97,6 +97,14 @@ jobs:
         working-directory: strivacity_pushnotification/example
         run: flutter pub get
 
+      # The Gradle wrapper (gradlew, gradle-wrapper.jar) isn't committed — Flutter only
+      # generates it as a side effect of an actual build, not `flutter pub get`. This is the
+      # cheapest way to trigger that: it copies the wrapper and writes local.properties, then
+      # returns before compiling anything.
+      - name: Generate Gradle wrapper
+        working-directory: strivacity_pushnotification/example
+        run: flutter build apk --config-only
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
@@ -127,6 +135,14 @@ jobs:
       - name: Install example dependencies
         working-directory: strivacity_pushnotification/example
         run: flutter pub get
+
+      # The Gradle wrapper (gradlew, gradle-wrapper.jar) isn't committed — Flutter only
+      # generates it as a side effect of an actual build, not `flutter pub get`. This is the
+      # cheapest way to trigger that: it copies the wrapper and writes local.properties, then
+      # returns before compiling anything.
+      - name: Generate Gradle wrapper
+        working-directory: strivacity_pushnotification/example
+        run: flutter build apk --config-only
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
@@ -164,6 +180,14 @@ jobs:
       - name: Install example dependencies
         working-directory: strivacity_pushnotification/example
         run: flutter pub get
+
+      # The Gradle wrapper (gradlew, gradle-wrapper.jar) isn't committed — Flutter only
+      # generates it as a side effect of an actual build, not `flutter pub get`. This is the
+      # cheapest way to trigger that: it copies the wrapper and writes local.properties, then
+      # returns before compiling anything.
+      - name: Generate Gradle wrapper
+        working-directory: strivacity_pushnotification/example
+        run: flutter build apk --config-only
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
