@@ -1,0 +1,203 @@
+name: Code Quality
+
+# The actual plugin package lives in ./strivacity_pushnotification (see
+# ../README.md for why) — every job below operates relative to that
+# subdirectory, not this repo's root.
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  # --- Dart/Flutter ----------------------------------------------------------
+
+  flutter-analyze:
+    name: Flutter analyze
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+
+      - name: Install dependencies
+        working-directory: strivacity_pushnotification
+        run: flutter pub get
+
+      - name: Analyze strivacity_pushnotification
+        working-directory: strivacity_pushnotification
+        run: flutter analyze
+
+  # --- iOS native (Swift) ------------------------------------------------------
+  # Runs on macos-latest since these tasks are iOS-specific.
+
+  swiftformat:
+    name: SwiftFormat (plugin iOS)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # SwiftFormat is preinstalled on GitHub's macOS runner images.
+      - name: Run SwiftFormat check
+        working-directory: strivacity_pushnotification/ios/strivacity_pushnotification
+        run: swiftformat --lint .
+
+  swiftlint:
+    name: SwiftLint (plugin iOS)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Run SwiftLint
+        working-directory: strivacity_pushnotification/ios/strivacity_pushnotification
+        run: swiftlint .
+
+  # --- Android native (Kotlin) -------------------------------------------------
+  # The plugin's android/ module isn't a standalone Gradle project (Flutter includes it as a
+  # subproject of the example app's build), so these run through example/android, targeting the
+  # included :strivacity_pushnotification project.
+
+  spotless:
+    name: Spotless (plugin Android)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: liberica
+          java-version: "21"
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+
+      - name: Install example dependencies
+        working-directory: strivacity_pushnotification/example
+        run: flutter pub get
+
+      # The Gradle wrapper (gradlew, gradle-wrapper.jar) isn't committed — Flutter only
+      # generates it as a side effect of an actual build, not `flutter pub get`. This is the
+      # cheapest way to trigger that: it copies the wrapper and writes local.properties, then
+      # returns before compiling anything.
+      - name: Generate Gradle wrapper
+        working-directory: strivacity_pushnotification/example
+        run: flutter build apk --config-only
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Run Spotless check
+        working-directory: strivacity_pushnotification/example/android
+        run: ./gradlew :strivacity_pushnotification:spotlessCheck --no-daemon
+
+  detekt:
+    name: Detekt (plugin Android)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: liberica
+          java-version: "21"
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+
+      - name: Install example dependencies
+        working-directory: strivacity_pushnotification/example
+        run: flutter pub get
+
+      # The Gradle wrapper (gradlew, gradle-wrapper.jar) isn't committed — Flutter only
+      # generates it as a side effect of an actual build, not `flutter pub get`. This is the
+      # cheapest way to trigger that: it copies the wrapper and writes local.properties, then
+      # returns before compiling anything.
+      - name: Generate Gradle wrapper
+        working-directory: strivacity_pushnotification/example
+        run: flutter build apk --config-only
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Run Detekt
+        working-directory: strivacity_pushnotification/example/android
+        run: ./gradlew :strivacity_pushnotification:detekt --no-daemon
+
+      - name: Upload Detekt SARIF report
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: strivacity_pushnotification/example/build/strivacity_pushnotification/reports/detekt/detekt.sarif
+
+  android-lint:
+    name: Android Lint (plugin Android)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: liberica
+          java-version: "21"
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
+
+      - name: Install example dependencies
+        working-directory: strivacity_pushnotification/example
+        run: flutter pub get
+
+      # The Gradle wrapper (gradlew, gradle-wrapper.jar) isn't committed — Flutter only
+      # generates it as a side effect of an actual build, not `flutter pub get`. This is the
+      # cheapest way to trigger that: it copies the wrapper and writes local.properties, then
+      # returns before compiling anything.
+      - name: Generate Gradle wrapper
+        working-directory: strivacity_pushnotification/example
+        run: flutter build apk --config-only
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Run Android Lint
+        working-directory: strivacity_pushnotification/example/android
+        run: ./gradlew :strivacity_pushnotification:lint --no-daemon
+
+      - name: Upload Lint SARIF report
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: strivacity_pushnotification/example/build/strivacity_pushnotification/reports/lint-results-debug.sarif
