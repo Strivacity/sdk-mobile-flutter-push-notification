@@ -1,19 +1,26 @@
 import Flutter
-import UIKit
+@_spi(PluginBridge) import PushNotification
 
+/// Connects the Dart push notification API to the native iOS SDK.
 public class StrivacityPushnotificationPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(name: "strivacity_pushnotification", binaryMessenger: registrar.messenger())
-        let instance = StrivacityPushnotificationPlugin()
-        registrar.addMethodCallDelegate(instance, channel: channel)
+        let host = PushNotificationHost(
+            sdkFactory: { allowSoftwareBackedKeys in
+                PushNotification(
+                    storage: DefaultPushNotificationStorage(allowSoftwareBackedKeys: allowSoftwareBackedKeys)
+                )
+            },
+            parseGrant: { url in
+                guard let parsed = URL(string: url) else {
+                    throw PushNotificationError.invalidGrant(message: "The enrollment grant is not a valid URL")
+                }
+                return try EnrollmentGrant.parse(parsed)
+            }
+        )
+        PushNotificationPlatformApiSetup.setUp(binaryMessenger: registrar.messenger(), api: host)
     }
 
-    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        switch call.method {
-        case "getPlatformVersion":
-            result("iOS " + UIDevice.current.systemVersion)
-        default:
-            result(FlutterMethodNotImplemented)
-        }
+    public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
+        PushNotificationPlatformApiSetup.setUp(binaryMessenger: registrar.messenger(), api: nil)
     }
 }

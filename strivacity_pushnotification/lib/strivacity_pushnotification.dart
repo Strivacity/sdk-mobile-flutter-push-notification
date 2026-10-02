@@ -1,9 +1,11 @@
-import 'strivacity_pushnotification_platform_interface.dart';
+/// Push-based multi-factor authentication for Flutter apps.
+library;
 
-/// Entry point of the Strivacity push notification plugin.
-class StrivacityPushnotification {
-  /// Returns the version of the underlying platform, or `null` when the
-  /// platform did not report one.
-  Future<String?> getPlatformVersion() =>
-      StrivacityPushnotificationPlatform.instance.getPlatformVersion();
-}
+export 'src/model/challenge.dart'
+    hide challengeFromPlatform, platformResolutionOf;
+export 'src/model/device_token_type.dart';
+export 'src/model/enrollment.dart';
+export 'src/model/enrollment_grant.dart';
+export 'src/model/push_notification_exception.dart';
+export 'src/model/resolution_result.dart';
+export 'src/push_notification.dart';

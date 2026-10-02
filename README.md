@@ -21,10 +21,10 @@ for the plugin's actual documentation and getting-started instructions.
 
 ### Activate the git hooks
 
-This repo's checks (`flutter analyze`, SwiftFormat/SwiftLint, and
+This repo's native-code checks (SwiftFormat/SwiftLint and
 Spotless/Detekt/Android Lint) run locally via
 [lefthook](https://github.com/evilmartians/lefthook), declared in
-[`.lefthook.yml`](.lefthook.yml) — the same tool `repos/ios` uses. Install
+[`.lefthook.yml`](.lefthook.yml) — the same tool the iOS SDK uses. Install
 the toolchain, then activate the hook once per clone, both from **this
 repo's root** (not `strivacity_pushnotification/`, since that's where `.git`
 and `.lefthook.yml` live):
@@ -34,12 +34,14 @@ brew install lefthook swiftformat swiftlint
 lefthook install
 ```
 
-That installs a `pre-commit` hook running, in parallel: `flutter analyze` on
-the plugin, SwiftFormat + SwiftLint on the plugin's iOS Swift code, and
-Spotless + Detekt + Android Lint on the plugin's Android Kotlin code (via
-`strivacity_pushnotification/example/android`'s Gradle build) — the same
-checks the [Code Quality](.github/workflows/code-quality.yml) workflow runs
-on pull requests. The Android job requires JDK 17 or 21 as `JAVA_HOME` (see
+That installs a `pre-commit` hook running, in parallel: SwiftFormat +
+SwiftLint on the plugin's iOS Swift code, and Spotless + Detekt + Android
+Lint on the plugin's Android Kotlin code (via
+`strivacity_pushnotification/example/android`'s Gradle build). The
+[Code Quality](.github/workflows/code-quality.yml) workflow runs the same
+checks on pull requests, plus `flutter analyze`, which the hook does not run
+— run it yourself from `strivacity_pushnotification/`. The Android job
+requires JDK 17 or 21 as `JAVA_HOME` (see
 Requirements above) and expects `strivacity_pushnotification/example` to
 already have its dependencies fetched at least once (`flutter pub get`).
 

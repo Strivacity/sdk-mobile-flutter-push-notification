@@ -2,6 +2,10 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // Resolves the native SDK from the local Maven repository during development.
+        if (project.hasProperty("strivacity.useMavenLocal")) {
+            mavenLocal()
+        }
     }
 }
 
