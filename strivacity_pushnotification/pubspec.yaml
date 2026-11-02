@@ -2,7 +2,7 @@ name: strivacity_pushnotification
 description: "Push-based multi-factor authentication for Flutter apps on Android and iOS: enroll a device, receive sign-in challenges, and approve, deny or answer them."
 version: 1.0.0-rc1
 homepage: https://strivacity.com
-repository: https://github.com/strivacity/strivacity_pushnotification
+repository: https://github.com/Strivacity/sdk-mobile-flutter-push-notification
 
 platforms:
   android:

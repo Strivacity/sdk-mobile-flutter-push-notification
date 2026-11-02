@@ -46,8 +46,9 @@ bool _deepEquals(Object? a, Object? b) {
   }
   if (a is List && b is List) {
     return a.length == b.length &&
-        a.indexed
-            .every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
+        a.indexed.every(
+          ((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]),
+        );
   }
   if (a is Map && b is Map) {
     if (a.length != b.length) {
@@ -105,7 +106,7 @@ enum PlatformDeviceTokenType {
   fcmToken,
 
   /// A Firebase installation ID.
-  fcmFid;
+  fcmFid,
 }
 
 /// The outcome of submitting a resolution.
@@ -114,7 +115,7 @@ enum PlatformResolutionResult {
   ok,
 
   /// The backend did not accept the resolution.
-  notOk;
+  notOk,
 }
 
 /// The kind of decision a challenge asks for.
@@ -123,7 +124,7 @@ enum PlatformChallengeType {
   simple,
 
   /// Choose one of the offered options, or deny.
-  contextMatching;
+  contextMatching,
 }
 
 /// What a resolution does with its challenge.
@@ -135,22 +136,18 @@ enum PlatformResolutionAction {
   deny,
 
   /// Answers a context-matching challenge with one of its options.
-  select;
+  select,
 }
 
 /// Settings applied when the native SDK is built.
 class PlatformCreateOptions {
-  PlatformCreateOptions({
-    required this.allowSoftwareBackedKeys,
-  });
+  PlatformCreateOptions({required this.allowSoftwareBackedKeys});
 
   /// Whether enrollment may use keys that are not hardware backed.
   bool allowSoftwareBackedKeys;
 
   List<Object?> _toList() {
-    return <Object?>[
-      allowSoftwareBackedKeys,
-    ];
+    return <Object?>[allowSoftwareBackedKeys];
   }
 
   Object encode() {
@@ -159,9 +156,7 @@ class PlatformCreateOptions {
 
   static PlatformCreateOptions decode(Object result) {
     result as List<Object?>;
-    return PlatformCreateOptions(
-      allowSoftwareBackedKeys: result[0]! as bool,
-    );
+    return PlatformCreateOptions(allowSoftwareBackedKeys: result[0]! as bool);
   }
 
   @override
@@ -208,12 +203,7 @@ class PlatformEnrollmentGrant {
   String displayUserName;
 
   List<Object?> _toList() {
-    return <Object?>[
-      issuer,
-      oneTimeToken,
-      accountId,
-      displayUserName,
-    ];
+    return <Object?>[issuer, oneTimeToken, accountId, displayUserName];
   }
 
   Object encode() {
@@ -281,13 +271,7 @@ class PlatformEnrollment {
   String? deviceName;
 
   List<Object?> _toList() {
-    return <Object?>[
-      issuer,
-      accountId,
-      keyId,
-      userName,
-      deviceName,
-    ];
+    return <Object?>[issuer, accountId, keyId, userName, deviceName];
   }
 
   Object encode() {
