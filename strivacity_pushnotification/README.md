@@ -49,7 +49,7 @@ A complete app lives in the [`example/`](example) directory. It covers enrollmen
 
 ## Installation
 
-The plugin is not published to pub.dev yet (`publish_to: none` in its `pubspec.yaml`). Add it to your app from the repository, or from a local checkout:
+Add the plugin to your app from [pub.dev](https://pub.dev/packages/strivacity_pushnotification):
 
 ```bash
 flutter pub add strivacity_pushnotification

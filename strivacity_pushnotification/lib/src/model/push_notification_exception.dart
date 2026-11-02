@@ -1,6 +1,5 @@
 import 'package:meta/meta.dart';
 
-
 /// A push notification call that failed.
 ///
 /// Every failure is one of the subclasses. The message never
