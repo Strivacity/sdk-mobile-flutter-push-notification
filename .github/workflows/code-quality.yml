@@ -35,6 +35,12 @@ jobs:
         working-directory: strivacity_pushnotification
         run: flutter pub get
 
+      # The example needs Firebase configuration files that are generated per
+      # Firebase project and not committed. Analysis only needs them to exist.
+      - name: Create placeholder Firebase configuration
+        working-directory: strivacity_pushnotification/example
+        run: dart run tools/generate_firebase_placeholders.dart
+
       - name: Analyze strivacity_pushnotification
         working-directory: strivacity_pushnotification
         run: flutter analyze
@@ -160,6 +166,10 @@ jobs:
   android-lint:
     name: Android Lint (plugin Android)
     runs-on: ubuntu-latest
+    # The native Android SDK is downloaded from GitHub Packages.
+    permissions:
+      contents: read
+      packages: read
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -194,10 +204,7 @@ jobs:
 
       - name: Run Android Lint
         working-directory: strivacity_pushnotification/example/android
+        env:
+          GITHUB_USER: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew :strivacity_pushnotification:lint --no-daemon
-
-      - name: Upload Lint SARIF report
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: strivacity_pushnotification/example/build/strivacity_pushnotification/reports/lint-results-debug.sarif

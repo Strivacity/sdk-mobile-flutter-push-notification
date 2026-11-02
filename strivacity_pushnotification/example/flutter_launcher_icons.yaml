@@ -1,0 +1,23 @@
+# App icon: the white logo mark on the purple tile used by the launch screen.
+# Regenerate the native icons after changing this file or the images:
+#   dart run flutter_launcher_icons
+# The images are rendered from the SVG sources in launcher_icon/.
+flutter_launcher_icons:
+  android: true
+  ios: true
+
+  # Rounded tile with transparent corners.
+  image_path: launcher_icon/icon.png
+  # Only API 29 and later are supported, so Android uses the adaptive icon below.
+  min_sdk_android: 29
+
+  # iOS applies its own mask, so the icon fills the whole image and has no transparency.
+  image_path_ios: launcher_icon/icon_ios.png
+  remove_alpha_ios: true
+
+  # Android adaptive icon: the white mark over the tile colour. The package insets the foreground
+  # by 16 % by default, which the image is designed for.
+  adaptive_icon_background: "#5d21ab"
+  adaptive_icon_foreground: launcher_icon/icon_foreground.png
+  # The system tints this one in themed icons (Android 13 and later).
+  adaptive_icon_monochrome: launcher_icon/icon_foreground.png

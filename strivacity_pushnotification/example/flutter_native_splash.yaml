@@ -1,0 +1,16 @@
+# Native launch screen, shown until Flutter draws its first frame: the logo tile centred on the
+# background colour. Android 12 and later can only show an icon on a colour, so every platform
+# uses the same image.
+# Regenerate the native files after changing this file or the image:
+#   dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#231634"
+  # 4x master (1152x1152 px). Rendered from splash/splash_icon.svg.
+  image: splash/splash_icon.png
+  ios_content_mode: center
+  android_gravity: center
+
+  android_12:
+    color: "#231634"
+    # The logo tile sits inside the 768 px circle that Android 12 and later keep visible.
+    image: splash/splash_icon.png

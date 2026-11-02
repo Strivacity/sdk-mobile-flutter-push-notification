@@ -1,57 +1,64 @@
+/// Push Notification Example app
+///
+/// Quick start for example app:
+///   - `main` runs [PushExampleApp], which starts the services the application
+///     needs and then opens its first screen. Some config options are available
+///     in `config.dart`.
+///   - Push related functionality, such as enrolling devices and resolving
+///     challenges, is in the `usecases` folder. Every PushNotification SDK call
+///     is made there.
+///   - [ChallengeInbox] service collects challenges from Intents, FCM push
+///     notification payloads, APNs callbacks channels. It serializes them and
+///     indirectly instructs app to display them in LIFO order
+///   - [DeviceTokenSource] for producing the Device Tokens for enrollments. It
+///     also watches for FCM token rotations and starts enrollment update
+///     mechanism when detected.
+library;
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:strivacity_pushnotification/strivacity_pushnotification.dart';
+
+import 'dependency.dart';
+import 'routes.dart';
+import 'theme/app_theme.dart';
+import 'usecases/push/challenge_inbox.dart';
+import 'usecases/push/device_token_source.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(PushExampleApp(dependencies: createAppDependencies()));
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class PushExampleApp extends StatefulWidget {
+  const PushExampleApp({required this.dependencies, super.key});
+
+  final AppDependencies dependencies;
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<PushExampleApp> createState() => _PushExampleAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-  final _strivacityPushnotificationPlugin = StrivacityPushnotification();
-
+class _PushExampleAppState extends State<PushExampleApp> {
   @override
   void initState() {
     super.initState();
-    unawaited(initPlatformState());
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await _strivacityPushnotificationPlugin.getPlatformVersion() ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
+    // Starts the app's services and opens its first screen when they are up.
+    unawaited(widget.dependencies.launch());
   }
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-    home: Scaffold(
-      appBar: AppBar(title: const Text('Plugin example app')),
-      body: Center(child: Text('Running on: $_platformVersion\n')),
-    ),
+    theme: AppTheme.data,
+    navigatorKey: widget.dependencies.navigator.navigatorKey,
+    routes: widget.dependencies.routes,
+    // Always start at the splash, whatever route the platform launched the app with (`flutter run
+    // --route`). Otherwise the splash, and with it bootstrapping, would be skipped.
+    onGenerateInitialRoutes: (initialRoute) => [
+      MaterialPageRoute<void>(
+        settings: const RouteSettings(name: AppRoute.splash),
+        builder: widget.dependencies.routes[AppRoute.splash]!,
+      ),
+    ],
   );
 }
